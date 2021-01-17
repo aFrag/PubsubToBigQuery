@@ -7,6 +7,7 @@ import sys
 
 import apache_beam as beam
 import apache_beam.transforms.window as window
+import dask.dataframe as dd
 import pandas as pd
 from apache_beam.options.pipeline_options import PipelineOptions
 from google.cloud import storage, bigquery
@@ -122,8 +123,9 @@ class WriteToGCS(beam.DoFn):
         date_window_start = window.start.to_utc_datetime().strftime("%Y-%m-%d")
         filename = f"{self.output_file_prefix}-{window_start}-{window_end}"
 
-        # Export to json
-        df.to_json(f"{self.output_path}raw/dt={date_window_start}/{filename}-*.json.gz",
+        # Convert to Dask Dataframe
+        ddf = dd.from_pandas(df, npartitions=1)
+        ddf.to_json(f"{self.output_path}raw/dt={date_window_start}/{filename}-*.json.gz",
                     compression="gzip",
                     orient="records",
                     lines=True)
