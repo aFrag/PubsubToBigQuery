@@ -16,7 +16,7 @@ from google.cloud import storage, bigquery
 class JobOptions(PipelineOptions):
     @classmethod
     def _add_argparse_args(cls, parser):
-         parser.add_argument(
+        parser.add_argument(
             "--project_id",
             type=str,
             help="project ID of GCP project",
